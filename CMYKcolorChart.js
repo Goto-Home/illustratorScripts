@@ -27,3 +27,13 @@ var bottom = top - squareSize;
 // Create square
 var square = doc.pathItems.rectangle(top, left, squareSize, squareSize);
 square.fillColor = color;
+
+// Create text label
+var labelText = "CMYK (" + cyan + ", " + magenta + ", " + yellow + ", " + black + ")";
+var textX = centerX;
+var textY = centerY - squareSize / 2 + 5; // Position at the bottom, inside edge
+var textFrame = doc.textFrames.add();
+textFrame.contents = labelText;
+textFrame.textRange.characterAttributes.fillColor = textColor;
+textFrame.position = [textX, textY];
+textFrame.textRange.paragraphAttributes.justification = Justification.CENTER;
