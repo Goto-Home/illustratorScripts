@@ -11,8 +11,47 @@ var magenta = parseFloat(prompt("Enter Magenta value (0-100):"));
 var yellow = parseFloat(prompt("Enter Yellow value (0-100):"));
 var black = parseFloat(prompt("Enter Black value (0-100):"));
 
-// Calculate the step size for CMYK values
+// Prompt for color selection
+var colorSelection = prompt("Enter the color to adjust (cyan, magenta, yellow, black):");
+
+// Convert colorSelection to lowercase for case-insensitive comparison
+colorSelection = colorSelection.toLowerCase();
+
+// Prompt for CMYK step value
 var stepSize = parseFloat(prompt("Enter CMYK step value (0-10):"));
+
+if (isNaN(stepSize)) {
+    stepSize = 5; // Default step size
+} else if (stepSize < 0 || stepSize > 10) {
+    alert("Step value must be between 0 and 10. Defaulting to 5.");
+    stepSize = 5; // Default step size
+}
+
+// Adjust the selected color value based on user input
+switch (colorSelection) {
+    case "cyan":
+	case "c":
+        cyan += stepSize;
+        break;
+    case "magenta":
+	case "m":
+        magenta += stepSize;
+        break;
+    case "yellow":
+	case "y":
+        yellow += stepSize;
+        break;
+    case "black":
+	case "b":
+	case "k":
+        black += stepSize;
+        break;
+    default:
+        // Handle invalid color selection
+        alert("Invalid color selection. Please choose from cyan, magenta, yellow, or black.");
+        // Exit the script or handle the error accordingly
+        break;
+}
 
 // Check if any of the colors are NaN and set them to 0 if true
 if (isNaN(cyan)) {
@@ -26,9 +65,6 @@ if (isNaN(yellow)) {
 }
 if (isNaN(black)) {
     black = 0;
-}
-if (isNaN(stepSize)) {
-    stepSize = 5;
 }
 
 // Set CMYK color for the origin square
@@ -126,11 +162,10 @@ for (var j = 1; j <= 2; j++) {
 originSquare.selected = true;
 textFrame.selected = true;
 
-// Replace "pathfinder-compoundShape" with the name of your recorded action, 
-// action must be recorded pathfinder action Exclude to create Compound Shape
+// Replace "Your Action Name" with the name of your recorded action
 var actionName = "pathfinder-compoundShape";
 
-// Call the doScript method to run the action "Default Actions" is the name of the folder the action is within
+// Call the doScript method to run the action
 app.doScript(actionName, "Default Actions");
 
 // Deselect all items
