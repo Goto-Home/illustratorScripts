@@ -122,3 +122,29 @@ for (var j = 1; j <= 2; j++) {
     squares.push({square: squareRight, textFrame: textFrameRight});
 }
 
+// Select just the far left square and textFrame at the end
+originSquare.selected = true;
+textFrame.selected = true;
+
+// Replace "pathfinder-compoundShape" with the name of your recorded action, 
+// action must be recorded pathfinder action Exclude to create Compound Shape
+var actionName = "pathfinder-compoundShape";
+
+// Call the doScript method to run the action "Default Actions" is the name of the folder the action is within
+app.doScript(actionName, "Default Actions");
+
+// Deselect all items
+doc.selection = null;
+
+// Loop through each square and text frame in the squares array, starting from index 1
+for (var i = 0; i < squares.length; i++) {
+    // Select the square and text frame
+    squares[i].square.selected = true;
+    squares[i].textFrame.selected = true;
+
+    // Call the doScript method to run the action
+    app.doScript(actionName, "Default Actions");
+
+    // Deselect all items
+    doc.selection = null;
+}
