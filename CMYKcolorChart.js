@@ -122,9 +122,3 @@ for (var j = 1; j <= 2; j++) {
     squares.push({square: squareRight, textFrame: textFrameRight});
 }
 
-// Select all created squares
-originSquare.selected = true;
-for (var k = 0; k < squares.length; k++) {
-    squares[k].selected = true;
-    squares[K].textFrame.selected = true;
-}
