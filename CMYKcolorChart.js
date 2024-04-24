@@ -5,7 +5,7 @@ var doc = app.activeDocument;
 var artboard = doc.artboards[doc.artboards.getActiveArtboardIndex()];
 var artboardRect = artboard.artboardRect;
 
-// Prompt for valid CMYK values || "or" sets them to 0 if NaN
+// Prompt for CMYK values
 var cyanInput = parseFloat(prompt("Enter Cyan value (0-100):")) || 0;
 var magentaInput = parseFloat(prompt("Enter Magenta value (0-100):")) || 0;
 var yellowInput = parseFloat(prompt("Enter Yellow value (0-100):")) || 0;
@@ -17,13 +17,6 @@ var magenta = Math.min(Math.max(magentaInput, 0), 100);
 var yellow = Math.min(Math.max(yellowInput, 0), 100);
 var black = Math.min(Math.max(blackInput, 0), 100);
 
-// Set CMYK color for the origin square
-var originColor = new CMYKColor();
-originColor.cyan = cyan;
-originColor.magenta = magenta;
-originColor.yellow = yellow;
-originColor.black = black;
-
 // Store original CMYK values
 var originalCyan = cyan;
 var originalMagenta = magenta;
@@ -31,7 +24,7 @@ var originalYellow = yellow;
 var originalBlack = black;
 
 // Prompt for color selection
-var colorSelection = prompt("Enter the color to adjust (cyan, magenta, yellow, black):").toLowerCase(); 
+var colorSelection = prompt("Enter the color to adjust (cyan, magenta, yellow, black):").toLowerCase();
 
 // Prompt for CMYK step value
 var stepSize = parseFloat(prompt("Enter CMYK step value (0-10):"));
@@ -40,59 +33,12 @@ if (isNaN(stepSize) || stepSize < 0 || stepSize > 10) {
     alert("Step value must be between 0 and 10. Defaulting to 5.");
 }
 
-// Adjust the selected color value based on user input
-switch (colorSelection) {
-    case "cyan":
-	case "c":
-        cyan += stepSize;
-        break;
-    case "magenta":
-	case "m":
-        magenta += stepSize;
-        break;
-    case "yellow":
-	case "y":
-        yellow += stepSize;
-        break;
-    case "black":
-	case "b":
-	case "k":
-        black += stepSize;
-        break;
-    default:
-        // Handle invalid color selection
-        alert("Invalid color selection. Please choose from cyan, magenta, yellow, or black.");
-        // Exit the script or handle the error accordingly
-        break;
-}
-
-// Adjusted CMYK values based on color selection and step size
-var adjustedCyan = originalCyan;
-var adjustedMagenta = originalMagenta;
-var adjustedYellow = originalYellow;
-var adjustedBlack = originalBlack;
-
-switch (colorSelection) {
-    case "cyan":
-    case "c":
-        adjustedCyan = cyan;
-        break;
-    case "magenta":
-    case "m":
-        adjustedMagenta = magenta;
-        break;
-    case "yellow":
-    case "y":
-        adjustedYellow = yellow;
-        break;
-    case "black":
-    case "b":
-    case "k":
-        adjustedBlack = black;
-        break;
-    default:
-        break;
-}
+// Set CMYK color for the origin square
+var originColor = new CMYKColor();
+originColor.cyan = originalCyan;
+originColor.magenta = originalMagenta;
+originColor.yellow = originalYellow;
+originColor.black = originalBlack;
 
 // Calculate square size
 var squareSize = 144; // 2 inches = 144 points
@@ -127,12 +73,44 @@ textFrame.textRange.paragraphAttributes.justification = Justification.CENTER;
 for (var i = 1; i <= 2; i++) {
     var left = leftOrigin - (i * squareSize * 1.25); // 2.5 inches center to center
 
+        // Adjusted CMYK values based on color selection and step size
+    var adjustedCyanLeft = originalCyan;
+    var adjustedMagentaLeft = originalMagenta;
+    var adjustedYellowLeft = originalYellow;
+    var adjustedBlackLeft = originalBlack;
+
+    switch (colorSelection) {
+        case "cyan":
+        case "c":
+            adjustedCyanLeft -= i * stepSize;
+			adjustedCyanLeft = Math.min(Math.max(adjustedCyanLeft, 0), 100);
+            break;
+        case "magenta":
+        case "m":
+            adjustedMagentaLeft -= i * stepSize;
+			adjustedMagentaLeft = Math.min(Math.max(adjustedMagentaLeft, 0), 100);
+            break;
+        case "yellow":
+        case "y":
+            adjustedYellowLeft -= i * stepSize;
+			adjustedYellowLeft = Math.min(Math.max(adjustedYellowLeft, 0), 100);
+            break;
+        case "black":
+        case "b":
+        case "k":
+            adjustedBlackLeft -= i * stepSize;
+			adjustedBlackLeft = Math.min(Math.max(adjustedBlackLeft, 0), 100);
+            break;
+        default:
+            break;
+    }
+
     // Create a unique CMYKColor object for each square
     var colorLeft = new CMYKColor();
-    colorLeft.cyan = adjustedCyan;
-    colorLeft.magenta = adjustedMagenta;
-    colorLeft.yellow = adjustedYellow;
-    colorLeft.black = adjustedBlack;
+    colorLeft.cyan = adjustedCyanLeft;
+    colorLeft.magenta = adjustedMagentaLeft;
+    colorLeft.yellow = adjustedYellowLeft;
+    colorLeft.black = adjustedBlackLeft;
 
     // Create the square with its own unique color
     var squareLeft = doc.pathItems.rectangle(topOrigin, left, squareSize, squareSize);
@@ -140,7 +118,7 @@ for (var i = 1; i <= 2; i++) {
     squareLeft.stroked = false;
     
     // Create text label for left square
-    var labelTextLeft = "CMYK (" + adjustedCyan + ", " + adjustedMagenta + ", " + adjustedYellow + ", " + adjustedBlack + ")";
+    var labelTextLeft = "CMYK (" + adjustedCyanLeft + ", " + adjustedMagentaLeft + ", " + adjustedYellowLeft + ", " + adjustedBlackLeft + ")";
     var textXLeft = left + squareSize / 2;
     var textFrameLeft = doc.textFrames.add();
     textFrameLeft.contents = labelTextLeft;
@@ -156,7 +134,7 @@ for (var i = 1; i <= 2; i++) {
 // Create squares to the right
 for (var j = 1; j <= 2; j++) {
     var left = leftOrigin + (j * squareSize * 1.25); // 2.5 inches center to center
- 
+
     // Adjusted CMYK values for right squares
     var adjustedCyanRight = originalCyan;
     var adjustedMagentaRight = originalMagenta;
@@ -167,19 +145,23 @@ for (var j = 1; j <= 2; j++) {
         case "cyan":
         case "c":
             adjustedCyanRight += j * stepSize; // Increase cyan by step size
+			adjustedCyanRight = Math.min(Math.max(adjustedCyanRight, 0), 100);
             break;
         case "magenta":
         case "m":
             adjustedMagentaRight += j * stepSize; // Increase magenta by step size
+			adjustedMagentaRight = Math.min(Math.max(adjustedMagentaRight, 0), 100);
             break;
         case "yellow":
         case "y":
             adjustedYellowRight += j * stepSize; // Increase yellow by step size
+			adjustedYellowRight = Math.min(Math.max(adjustedYellowRight, 0), 100);
             break;
         case "black":
         case "b":
         case "k":
             adjustedBlackRight += j * stepSize; // Increase black by step size
+			adjustedBlackRight = Math.min(Math.max(adjustedBlackRight, 0), 100);
             break;
         default:
             break;
@@ -214,7 +196,7 @@ originSquare.selected = true;
 textFrame.selected = true;
 
 // Replace "Your Action Name" with the name of your recorded action
-var actionName = "pathfinder-compoundShape";
+const actionName = "pathfinder-compoundShape";
 
 // Call the doScript method to run the action
 app.doScript(actionName, "Default Actions");
