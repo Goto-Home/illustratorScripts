@@ -191,6 +191,9 @@ for (var j = 1; j <= 2; j++) {
     squares.push({square: squareRight, textFrame: textFrameRight});
 }
 
+// Deselect all items
+doc.selection = null;
+
 // Select just the far left square and textFrame at the end
 originSquare.selected = true;
 textFrame.selected = true;
