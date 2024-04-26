@@ -1,7 +1,20 @@
+// Get the active document
+var doc = app.activeDocument;
+
+// Get the active artboard
+var artboard = doc.artboards[doc.artboards.getActiveArtboardIndex()];
+var artboardRect = artboard.artboardRect;
 
 var w; // window
 var p; // panel
+var gInput; // CMYK inputs
+var rbInput; // Radio Button input
+var stepInput; // Step % input
+var lrInput; // How many steps left(down) and right(up) 
+var sgd; // Select, Group, Deselect 
 var g; // group
+
+
 
 var w = new Window("dialog", "CMYK Palette", undefined);
 
@@ -10,6 +23,7 @@ gInput = p.add("group");
 rbInput = p.add("group");
 stepInput = p.add("group");
 lrInput = p.add("group");
+sgd = p.add("group")
 g = p.add("group");
 
 gInput.add("statictext", undefined, "C:");// Add labels for input fields
@@ -34,6 +48,9 @@ var mRadioButton = rbInput.add("radiobutton", undefined, "Magenta");
 var yRadioButton = rbInput.add("radiobutton", undefined, "Yellow");
 var kRadioButton = rbInput.add("radiobutton", undefined, "Black");
 
+// Set the first radio button to be selected by default
+cRadioButton.value = true;
+
 // Enter your Step value for the CMYK values
 stepInput.add("statictext", undefined, "Enter CMYK step value (0-10):");// Add labels for input fields
 var stepSizeInput = stepInput.add("edittext", undefined, "5"); // Add input fields for CMYK values
@@ -49,21 +66,17 @@ lrInput.add("statictext", undefined, "How many steps up (0-10):");// Add labels 
 var rightInput = lrInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
 rightInput.preferredSize.width = 60; // Set width of the input box
 
+// Group of buttons that Select everything visible on the artboard, Group 
+var btnSelectAll = sgd.add("button", undefined, "Select All");
+var btnGroup = sgd.add("button", undefined, "Group");
+var btnDeselect = sgd.add("button", undefined, "Deselect All");
+
 // Add Submit or Cancel buttons
 var btnSubmit = g.add("button", undefined, "Submit");
 var btnClose = g.add("button", undefined, "Close");
 
 // UI EVENT HANDLERS
 	btnSubmit.onClick = function() {
-	
-	// alert("OK was clicked");
-	
-		// Get the active document
-		var doc = app.activeDocument;
-
-		// Get the active artboard
-		var artboard = doc.artboards[doc.artboards.getActiveArtboardIndex()];
-		var artboardRect = artboard.artboardRect;
 		
 		var cyanInput = parseInt(cInput.text);
 		var magentaInput = parseInt(mInput.text);
@@ -285,12 +298,55 @@ var btnClose = g.add("button", undefined, "Close");
 	
 };
 
+btnSelectAll.onClick = function () {
+	selectAllItems(doc);
+};
+
+btnGroup.onClick = function () {
+    groupSelectedItems(doc);
+};
+
+btnDeselect.onClick = function () {
+	deselectAllItems(doc);
+};
+
 btnClose.onClick = function () {
-	w.close(0);
+	w.close();
 };
 
 // SHOW THE WINDOW
-	
-if(w.show() == 1) {
-	alert("OK was clicked")
+w.show()
+
+// Function to select all items on the document
+function selectAllItems(document) {
+    // Deselect all items first
+    document.selection = null;
+    // Loop through all page items
+    for (var i = 0; i < document.pageItems.length; i++) {
+        var currentItem = document.pageItems[i];
+        // Check if the item is visible
+        if (!currentItem.hidden) {
+            currentItem.selected = true;
+        }
+    }
+}
+
+// Function to group selected items
+function groupSelectedItems(document) {
+    // Check if there are any selected items
+    if (document.selection.length > 1) {
+        // Create a group
+        var group = document.groupItems.add();
+        // Add selected items to the group
+        for (var i = 0; i < document.selection.length; i++) {
+            var currentItem = document.selection[i];
+            currentItem.move(group, ElementPlacement.PLACEATEND);
+        }
+    }
+}
+
+// Function to deselect all items on the document
+function deselectAllItems(document) {
+    // Deselect all items
+    document.selection = null;
 }
