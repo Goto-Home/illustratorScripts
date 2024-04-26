@@ -1,3 +1,6 @@
+#target illustrator
+#targetengine main
+
 // Get the active document
 var doc = app.activeDocument;
 
@@ -72,7 +75,7 @@ var btnGroup = sgd.add("button", undefined, "Group");
 var btnDeselect = sgd.add("button", undefined, "Deselect All");
 
 // Add Submit or Cancel buttons
-var btnSubmit = g.add("button", undefined, "Submit");
+var btnSubmit = g.add("button", undefined, "Create");
 var btnClose = g.add("button", undefined, "Close");
 
 // UI EVENT HANDLERS
@@ -208,8 +211,6 @@ var btnClose = g.add("button", undefined, "Close");
 
 			squares.push({square: squareLeft, textFrame: textFrameLeft});
 		}
-
-
 
 		// Create squares to the right
 		for (var j = 1; j <= rightStep; j++) {
