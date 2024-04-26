@@ -1,221 +1,296 @@
-// Get the active document
-var doc = app.activeDocument;
 
-// Get the active artboard
-var artboard = doc.artboards[doc.artboards.getActiveArtboardIndex()];
-var artboardRect = artboard.artboardRect;
+var w; // window
+var p; // panel
+var g; // group
 
-// Prompt for CMYK values
-var cyanInput = parseFloat(prompt("Enter Cyan value (0-100):")) || 0;
-var magentaInput = parseFloat(prompt("Enter Magenta value (0-100):")) || 0;
-var yellowInput = parseFloat(prompt("Enter Yellow value (0-100):")) || 0;
-var blackInput = parseFloat(prompt("Enter Black value (0-100):")) || 0;
+var w = new Window("dialog", "CMYK Palette", undefined);
 
-// Validate and adjust parsed values
-var cyan = Math.min(Math.max(cyanInput, 0), 100);
-var magenta = Math.min(Math.max(magentaInput, 0), 100);
-var yellow = Math.min(Math.max(yellowInput, 0), 100);
-var black = Math.min(Math.max(blackInput, 0), 100);
+p = w.add("panel");
+gInput = p.add("group");
+rbInput = p.add("group");
+stepInput = p.add("group");
+lrInput = p.add("group");
+g = p.add("group");
 
-// Store original CMYK values
-var originalCyan = cyan;
-var originalMagenta = magenta;
-var originalYellow = yellow;
-var originalBlack = black;
+gInput.add("statictext", undefined, "C:");// Add labels for input fields
+var cInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
+cInput.preferredSize.width = 60; // Set width of the input box
 
-// Prompt for color selection
-var colorSelection = prompt("Enter the color to adjust (cyan, magenta, yellow, black):").toLowerCase();
+gInput.add("statictext", undefined, "M:"); // Add labels for input fields
+var mInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
+mInput.preferredSize.width = 60; // Set width of the input box
 
-// Prompt for CMYK step value
-var stepSize = parseFloat(prompt("Enter CMYK step value (0-10):"));
-if (isNaN(stepSize) || stepSize < 0 || stepSize > 10) {
-    stepSize = 5; // Default stepSize if invalid input
-    alert("Step value must be between 0 and 10. Defaulting to 5.");
-}
+gInput.add("statictext", undefined, "Y:"); // Add labels for input fields
+var yInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
+yInput.preferredSize.width = 60; // Set width of the input box
 
-// Set CMYK color for the origin square
-var originColor = new CMYKColor();
-originColor.cyan = originalCyan;
-originColor.magenta = originalMagenta;
-originColor.yellow = originalYellow;
-originColor.black = originalBlack;
+gInput.add("statictext", undefined, "K:"); // Add labels for input fields
+var kInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
+kInput.preferredSize.width = 60; // Set width of the input box
 
-// Calculate square size
-var squareSize = 144; // 2 inches = 144 points
+// Add radio buttons for CMYK selections
+var cRadioButton = rbInput.add("radiobutton", undefined, "Cyan");
+var mRadioButton = rbInput.add("radiobutton", undefined, "Magenta");
+var yRadioButton = rbInput.add("radiobutton", undefined, "Yellow");
+var kRadioButton = rbInput.add("radiobutton", undefined, "Black");
 
-// Create an array to store the squares
-var squares = [];
-
-// Create origin square
-var centerX = (artboardRect[2] - artboardRect[0]) / 2 + artboardRect[0];
-var centerY = (artboardRect[3] - artboardRect[1]) / 2 + artboardRect[1];
-var leftOrigin = centerX - squareSize / 2;
-var topOrigin = centerY + squareSize / 2;
-
-// Create origin square location
-var originSquare = doc.pathItems.rectangle(topOrigin, leftOrigin, squareSize, squareSize);
-originSquare.fillColor = originColor;
-originSquare.stroked = false;
-
-// Create text label for origin square
-var labelText = "CMYK (" + originalCyan + ", " + originalMagenta + ", " + originalYellow + ", " + originalBlack + ")";
-var textX = centerX;
-var textY = (centerY - squareSize / 2) + 14; // Position at the bottom, inside edge
-var textFrame = doc.textFrames.add();
-textFrame.contents = labelText;
-textFrame.textRange.characterAttributes.fillColor = originColor;
-textFrame.position = [textX, textY];
-textFrame.textRange.paragraphAttributes.justification = Justification.CENTER;
+// Enter your Step value for the CMYK values
+stepInput.add("statictext", undefined, "Enter CMYK step value (0-10):");// Add labels for input fields
+var stepSizeInput = stepInput.add("edittext", undefined, "5"); // Add input fields for CMYK values
+stepSizeInput.preferredSize.width = 60; // Set width of the input box
 
 
+// Enter the number of steps to increase or decrease CMYK values
+lrInput.add("statictext", undefined, "How many steps down (0-10):");// Add labels for input fields
+var leftInput = lrInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
+leftInput.preferredSize.width = 60; // Set width of the input box
 
-// Create squares to the left
-for (var i = 1; i <= 2; i++) {
-    var left = leftOrigin - (i * squareSize * 1.25); // 2.5 inches center to center
+lrInput.add("statictext", undefined, "How many steps up (0-10):");// Add labels for input fields
+var rightInput = lrInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
+rightInput.preferredSize.width = 60; // Set width of the input box
 
-        // Adjusted CMYK values based on color selection and step size
-    var adjustedCyanLeft = originalCyan;
-    var adjustedMagentaLeft = originalMagenta;
-    var adjustedYellowLeft = originalYellow;
-    var adjustedBlackLeft = originalBlack;
+// Add Submit or Cancel buttons
+var btnSubmit = g.add("button", undefined, "Submit");
+var btnClose = g.add("button", undefined, "Close");
 
-    switch (colorSelection) {
-        case "cyan":
-        case "c":
-            adjustedCyanLeft -= i * stepSize;
-			adjustedCyanLeft = Math.min(Math.max(adjustedCyanLeft, 0), 100);
-            break;
-        case "magenta":
-        case "m":
-            adjustedMagentaLeft -= i * stepSize;
-			adjustedMagentaLeft = Math.min(Math.max(adjustedMagentaLeft, 0), 100);
-            break;
-        case "yellow":
-        case "y":
-            adjustedYellowLeft -= i * stepSize;
-			adjustedYellowLeft = Math.min(Math.max(adjustedYellowLeft, 0), 100);
-            break;
-        case "black":
-        case "b":
-        case "k":
-            adjustedBlackLeft -= i * stepSize;
-			adjustedBlackLeft = Math.min(Math.max(adjustedBlackLeft, 0), 100);
-            break;
-        default:
-            break;
-    }
+// UI EVENT HANDLERS
+	btnSubmit.onClick = function() {
+	
+	// alert("OK was clicked");
+	
+		// Get the active document
+		var doc = app.activeDocument;
 
-    // Create a unique CMYKColor object for each square
-    var colorLeft = new CMYKColor();
-    colorLeft.cyan = adjustedCyanLeft;
-    colorLeft.magenta = adjustedMagentaLeft;
-    colorLeft.yellow = adjustedYellowLeft;
-    colorLeft.black = adjustedBlackLeft;
+		// Get the active artboard
+		var artboard = doc.artboards[doc.artboards.getActiveArtboardIndex()];
+		var artboardRect = artboard.artboardRect;
+		
+		var cyanInput = parseInt(cInput.text);
+		var magentaInput = parseInt(mInput.text);
+		var yellowInput = parseInt(yInput.text);
+		var blackInput = parseInt(kInput.text);
+		var stepLeft = parseInt(leftInput.text);
+		var stepRight = parseInt(rightInput.text);
+			
+				// Validate and adjust parsed values
+		var cyan = Math.min(Math.max(cyanInput, 0), 100);
+		var magenta = Math.min(Math.max(magentaInput, 0), 100);
+		var yellow = Math.min(Math.max(yellowInput, 0), 100);
+		var black = Math.min(Math.max(blackInput, 0), 100);
+		var leftStep = Math.min(Math.max(stepLeft, 0), 10);
+		var rightStep = Math.min(Math.max(stepRight, 0), 10);
 
-    // Create the square with its own unique color
-    var squareLeft = doc.pathItems.rectangle(topOrigin, left, squareSize, squareSize);
-    squareLeft.fillColor = colorLeft;
-    squareLeft.stroked = false;
-    
-    // Create text label for left square
-    var labelTextLeft = "CMYK (" + adjustedCyanLeft + ", " + adjustedMagentaLeft + ", " + adjustedYellowLeft + ", " + adjustedBlackLeft + ")";
-    var textXLeft = left + squareSize / 2;
-    var textFrameLeft = doc.textFrames.add();
-    textFrameLeft.contents = labelTextLeft;
-    textFrameLeft.textRange.characterAttributes.fillColor = colorLeft;
-    textFrameLeft.position = [textXLeft, textY];
-    textFrameLeft.textRange.paragraphAttributes.justification = Justification.CENTER;
+		// Store original CMYK values
+		var originalCyan = cyan;
+		var originalMagenta = magenta;
+		var originalYellow = yellow;
+		var originalBlack = black;
 
-    squares.push({square: squareLeft, textFrame: textFrameLeft});
-}
+		// Retrieve the selected radio button for color selection
+		var colorSelection;
+		if (cRadioButton.value) {
+			colorSelection = "cyan";
+		} else if (mRadioButton.value) {
+			colorSelection = "magenta";
+		} else if (yRadioButton.value) {
+			colorSelection = "yellow";
+		} else if (kRadioButton.value) {
+			colorSelection = "black";
+		}
+
+		// Prompt for CMYK step value
+		var stepSize = parseInt(stepSizeInput.text);
+		if (isNaN(stepSize) || stepSize < 0 || stepSize > 10) {
+			stepSize = 5; // Default stepSize if invalid input
+			alert("Step value must be between 0 and 10. Defaulting to 5.");
+		}
+
+		// Set CMYK color for the origin square
+		var originColor = new CMYKColor();
+		originColor.cyan = originalCyan;
+		originColor.magenta = originalMagenta;
+		originColor.yellow = originalYellow;
+		originColor.black = originalBlack;
+
+		// Calculate square size
+		var squareSize = 144; // 2 inches = 144 points
+
+		// Create an array to store the squares
+		var squares = [];
+
+		// Create origin square
+		var centerX = (artboardRect[2] - artboardRect[0]) / 2 + artboardRect[0];
+		var centerY = (artboardRect[3] - artboardRect[1]) / 2 + artboardRect[1];
+		var leftOrigin = centerX - squareSize / 2;
+		var topOrigin = centerY + squareSize / 2;
+
+		// Create origin square location
+		var originSquare = doc.pathItems.rectangle(topOrigin, leftOrigin, squareSize, squareSize);
+		originSquare.fillColor = originColor;
+		originSquare.stroked = false;
+
+		// Create text label for origin square
+		var labelText = "CMYK (" + originalCyan + ", " + originalMagenta + ", " + originalYellow + ", " + originalBlack + ")";
+		var textX = centerX;
+		var textY = (centerY - squareSize / 2) + 14; // Position at the bottom, inside edge
+		var textFrame = doc.textFrames.add();
+		textFrame.contents = labelText;
+		textFrame.textRange.characterAttributes.fillColor = originColor;
+		textFrame.position = [textX, textY];
+		textFrame.textRange.paragraphAttributes.justification = Justification.CENTER;
 
 
 
-// Create squares to the right
-for (var j = 1; j <= 2; j++) {
-    var left = leftOrigin + (j * squareSize * 1.25); // 2.5 inches center to center
+		// Create squares to the left
+		for (var i = 1; i <= leftStep; i++) {
+			var left = leftOrigin - (i * squareSize * 1.25); // 2.5 inches center to center
 
-    // Adjusted CMYK values for right squares
-    var adjustedCyanRight = originalCyan;
-    var adjustedMagentaRight = originalMagenta;
-    var adjustedYellowRight = originalYellow;
-    var adjustedBlackRight = originalBlack;
+				// Adjusted CMYK values based on color selection and step size
+			var adjustedCyanLeft = originalCyan;
+			var adjustedMagentaLeft = originalMagenta;
+			var adjustedYellowLeft = originalYellow;
+			var adjustedBlackLeft = originalBlack;
 
-    switch (colorSelection) {
-        case "cyan":
-        case "c":
-            adjustedCyanRight += j * stepSize; // Increase cyan by step size
-			adjustedCyanRight = Math.min(Math.max(adjustedCyanRight, 0), 100);
-            break;
-        case "magenta":
-        case "m":
-            adjustedMagentaRight += j * stepSize; // Increase magenta by step size
-			adjustedMagentaRight = Math.min(Math.max(adjustedMagentaRight, 0), 100);
-            break;
-        case "yellow":
-        case "y":
-            adjustedYellowRight += j * stepSize; // Increase yellow by step size
-			adjustedYellowRight = Math.min(Math.max(adjustedYellowRight, 0), 100);
-            break;
-        case "black":
-        case "b":
-        case "k":
-            adjustedBlackRight += j * stepSize; // Increase black by step size
-			adjustedBlackRight = Math.min(Math.max(adjustedBlackRight, 0), 100);
-            break;
-        default:
-            break;
-    }
+			switch (colorSelection) {
+				case "cyan":
+					adjustedCyanLeft -= i * stepSize;
+					adjustedCyanLeft = Math.min(Math.max(adjustedCyanLeft, 0), 100);
+					break;
+				case "magenta":
+					adjustedMagentaLeft -= i * stepSize;
+					adjustedMagentaLeft = Math.min(Math.max(adjustedMagentaLeft, 0), 100);
+					break;
+				case "yellow":
+					adjustedYellowLeft -= i * stepSize;
+					adjustedYellowLeft = Math.min(Math.max(adjustedYellowLeft, 0), 100);
+					break;
+				case "black":
+					adjustedBlackLeft -= i * stepSize;
+					adjustedBlackLeft = Math.min(Math.max(adjustedBlackLeft, 0), 100);
+					break;
+				default:
+					break;
+			}
 
-    // Create a unique CMYKColor object for each square
-    var colorRight = new CMYKColor();
-    colorRight.cyan = adjustedCyanRight;
-    colorRight.magenta = adjustedMagentaRight;
-    colorRight.yellow = adjustedYellowRight;
-    colorRight.black = adjustedBlackRight;
+			// Create a unique CMYKColor object for each square
+			var colorLeft = new CMYKColor();
+			colorLeft.cyan = adjustedCyanLeft;
+			colorLeft.magenta = adjustedMagentaLeft;
+			colorLeft.yellow = adjustedYellowLeft;
+			colorLeft.black = adjustedBlackLeft;
 
-    // Create the square with its own unique color
-    var squareRight = doc.pathItems.rectangle(topOrigin, left, squareSize, squareSize);
-    squareRight.fillColor = colorRight;
-    squareRight.stroked = false;
+			// Create the square with its own unique color
+			var squareLeft = doc.pathItems.rectangle(topOrigin, left, squareSize, squareSize);
+			squareLeft.fillColor = colorLeft;
+			squareLeft.stroked = false;
+			
+			// Create text label for left square
+			var labelTextLeft = "CMYK (" + adjustedCyanLeft + ", " + adjustedMagentaLeft + ", " + adjustedYellowLeft + ", " + adjustedBlackLeft + ")";
+			var textXLeft = left + squareSize / 2;
+			var textFrameLeft = doc.textFrames.add();
+			textFrameLeft.contents = labelTextLeft;
+			textFrameLeft.textRange.characterAttributes.fillColor = colorLeft;
+			textFrameLeft.position = [textXLeft, textY];
+			textFrameLeft.textRange.paragraphAttributes.justification = Justification.CENTER;
 
-    // Create text label for right square
-    var labelTextRight = "CMYK (" + adjustedCyanRight + ", " + adjustedMagentaRight + ", " + adjustedYellowRight + ", " + adjustedBlackRight + ")";
-    var textXRight = left + squareSize / 2;
-    var textFrameRight = doc.textFrames.add();
-    textFrameRight.contents = labelTextRight;
-    textFrameRight.textRange.characterAttributes.fillColor = colorRight;
-    textFrameRight.position = [textXRight, textY];
-    textFrameRight.textRange.paragraphAttributes.justification = Justification.CENTER;
+			squares.push({square: squareLeft, textFrame: textFrameLeft});
+		}
 
-    squares.push({square: squareRight, textFrame: textFrameRight});
-}
 
-// Deselect all items
-doc.selection = null;
 
-// Select just the far left square and textFrame at the end
-originSquare.selected = true;
-textFrame.selected = true;
+		// Create squares to the right
+		for (var j = 1; j <= rightStep; j++) {
+			var left = leftOrigin + (j * squareSize * 1.25); // 2.5 inches center to center
 
-// Replace "Your Action Name" with the name of your recorded action
-const actionName = "pathfinder-compoundShape";
+			// Adjusted CMYK values for right squares
+			var adjustedCyanRight = originalCyan;
+			var adjustedMagentaRight = originalMagenta;
+			var adjustedYellowRight = originalYellow;
+			var adjustedBlackRight = originalBlack;
 
-// Call the doScript method to run the action
-app.doScript(actionName, "Default Actions");
+			switch (colorSelection) {
+				case "cyan":
+					adjustedCyanRight += j * stepSize; // Increase cyan by step size
+					adjustedCyanRight = Math.min(Math.max(adjustedCyanRight, 0), 100);
+					break;
+				case "magenta":
+					adjustedMagentaRight += j * stepSize; // Increase magenta by step size
+					adjustedMagentaRight = Math.min(Math.max(adjustedMagentaRight, 0), 100);
+					break;
+				case "yellow":
+					adjustedYellowRight += j * stepSize; // Increase yellow by step size
+					adjustedYellowRight = Math.min(Math.max(adjustedYellowRight, 0), 100);
+					break;
+				case "black":
+					adjustedBlackRight += j * stepSize; // Increase black by step size
+					adjustedBlackRight = Math.min(Math.max(adjustedBlackRight, 0), 100);
+					break;
+				default:
+					break;
+			}
 
-// Deselect all items
-doc.selection = null;
+			// Create a unique CMYKColor object for each square
+			var colorRight = new CMYKColor();
+			colorRight.cyan = adjustedCyanRight;
+			colorRight.magenta = adjustedMagentaRight;
+			colorRight.yellow = adjustedYellowRight;
+			colorRight.black = adjustedBlackRight;
 
-// Loop through each square and text frame in the squares array, starting from index 1
-for (var i = 0; i < squares.length; i++) {
-    // Select the square and text frame
-    squares[i].square.selected = true;
-    squares[i].textFrame.selected = true;
+			// Create the square with its own unique color
+			var squareRight = doc.pathItems.rectangle(topOrigin, left, squareSize, squareSize);
+			squareRight.fillColor = colorRight;
+			squareRight.stroked = false;
 
-    // Call the doScript method to run the action
-    app.doScript(actionName, "Default Actions");
+			// Create text label for right square
+			var labelTextRight = "CMYK (" + adjustedCyanRight + ", " + adjustedMagentaRight + ", " + adjustedYellowRight + ", " + adjustedBlackRight + ")";
+			var textXRight = left + squareSize / 2;
+			var textFrameRight = doc.textFrames.add();
+			textFrameRight.contents = labelTextRight;
+			textFrameRight.textRange.characterAttributes.fillColor = colorRight;
+			textFrameRight.position = [textXRight, textY];
+			textFrameRight.textRange.paragraphAttributes.justification = Justification.CENTER;
 
-    // Deselect all items
-    doc.selection = null;
+			squares.push({square: squareRight, textFrame: textFrameRight});
+		}
+
+		// Deselect all items
+		doc.selection = null;
+
+		// Select just the far left square and textFrame at the end
+		originSquare.selected = true;
+		textFrame.selected = true;
+
+		// Replace "Your Action Name" with the name of your recorded action
+		const actionName = "pathfinder-compoundShape";
+
+		// Call the doScript method to run the action
+		app.doScript(actionName, "Default Actions");
+
+		// Deselect all items
+		doc.selection = null;
+
+		// Loop through each square and text frame in the squares array, starting from index 1
+		for (var i = 0; i < squares.length; i++) {
+			// Select the square and text frame
+			squares[i].square.selected = true;
+			squares[i].textFrame.selected = true;
+
+			// Call the doScript method to run the action
+			app.doScript(actionName, "Default Actions");
+
+			// Deselect all items
+			doc.selection = null;
+		}
+	
+	
+};
+
+btnClose.onClick = function () {
+	w.close(0);
+};
+
+// SHOW THE WINDOW
+	
+if(w.show() == 1) {
+	alert("OK was clicked")
 }
