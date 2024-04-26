@@ -14,17 +14,17 @@ var lrInput; // How many steps left(down) and right(up)
 var sgd; // Select, Group, Deselect 
 var g; // group
 
-
-
 var w = new Window("dialog", "CMYK Palette", undefined);
 
 p = w.add("panel");
 gInput = p.add("group");
 rbInput = p.add("group");
 stepInput = p.add("group");
-lrInput = p.add("group");
-sgd = p.add("group")
-g = p.add("group");
+lInput = p.add("group");
+rInput = p.add("group");
+sgd = p.add("group");
+c = w.add("panel");
+g = c.add("group");
 
 gInput.add("statictext", undefined, "C:");// Add labels for input fields
 var cInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
@@ -58,12 +58,12 @@ stepSizeInput.preferredSize.width = 60; // Set width of the input box
 
 
 // Enter the number of steps to increase or decrease CMYK values
-lrInput.add("statictext", undefined, "How many steps down (0-10):");// Add labels for input fields
-var leftInput = lrInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
+lInput.add("statictext", undefined, "How many steps down (0-10):");// Add labels for input fields
+var leftInput = lInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
 leftInput.preferredSize.width = 60; // Set width of the input box
 
-lrInput.add("statictext", undefined, "How many steps up (0-10):");// Add labels for input fields
-var rightInput = lrInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
+rInput.add("statictext", undefined, "How many steps up (0-10):");// Add labels for input fields
+var rightInput = rInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
 rightInput.preferredSize.width = 60; // Set width of the input box
 
 // Group of buttons that Select everything visible on the artboard, Group 
@@ -314,9 +314,6 @@ btnClose.onClick = function () {
 	w.close();
 };
 
-// SHOW THE WINDOW
-w.show()
-
 // Function to select all items on the document
 function selectAllItems(document) {
     // Deselect all items first
@@ -350,3 +347,6 @@ function deselectAllItems(document) {
     // Deselect all items
     document.selection = null;
 }
+
+// SHOW THE WINDOW
+w.show()
