@@ -29,136 +29,145 @@ sgd = p.add("group");
 c = w.add("panel");
 g = c.add("group");
 
-gInput.add("statictext", undefined, "C:");// Add labels for input fields
-var cInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
-cInput.preferredSize.width = 60; // Set width of the input box
+gInput.add("statictext", undefined, "C:");
+var cInput = gInput.add("edittext", undefined, "0");
+cInput.preferredSize.width = 60;
 
-gInput.add("statictext", undefined, "M:"); // Add labels for input fields
-var mInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
-mInput.preferredSize.width = 60; // Set width of the input box
+gInput.add("statictext", undefined, "M:");
+var mInput = gInput.add("edittext", undefined, "0");
+mInput.preferredSize.width = 60;
 
-gInput.add("statictext", undefined, "Y:"); // Add labels for input fields
-var yInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
-yInput.preferredSize.width = 60; // Set width of the input box
+gInput.add("statictext", undefined, "Y:");
+var yInput = gInput.add("edittext", undefined, "0");
+yInput.preferredSize.width = 60;
 
-gInput.add("statictext", undefined, "K:"); // Add labels for input fields
-var kInput = gInput.add("edittext", undefined, "0"); // Add input fields for CMYK values
-kInput.preferredSize.width = 60; // Set width of the input box
+gInput.add("statictext", undefined, "K:");
+var kInput = gInput.add("edittext", undefined, "0");
+kInput.preferredSize.width = 60;
 
-// Add radio buttons for CMYK selections
+// Radio-buttons for which CMYK to step
 var cRadioButton = rbInput.add("radiobutton", undefined, "Cyan");
 var mRadioButton = rbInput.add("radiobutton", undefined, "Magenta");
 var yRadioButton = rbInput.add("radiobutton", undefined, "Yellow");
 var kRadioButton = rbInput.add("radiobutton", undefined, "Black");
-
 // Set the first radio button to be selected by default
 cRadioButton.value = true;
 
-// Enter your Step value for the CMYK values
-stepInput.add("statictext", undefined, "Enter CMYK step value (0-10):");// Add labels for input fields
-var stepSizeInput = stepInput.add("edittext", undefined, "5"); // Add input fields for CMYK values
-stepSizeInput.preferredSize.width = 60; // Set width of the input box
-
+// Enter your step value for the CMYK values
+stepInput.add("statictext", undefined, "Enter CMYK step value (0-10):");
+var stepSizeInput = stepInput.add("edittext", undefined, "5");
+stepSizeInput.preferredSize.width = 60;
 
 // Enter the number of steps to increase or decrease CMYK values
-lInput.add("statictext", undefined, "How many steps down (0-10):");// Add labels for input fields
-var leftInput = lInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
-leftInput.preferredSize.width = 60; // Set width of the input box
+	// Steps to the left
+	lInput.add("statictext", undefined, "How many steps down (0-10):");
+	var leftInput = lInput.add("edittext", undefined, "2");
+	leftInput.preferredSize.width = 60;
+	// Steps to the right
+	rInput.add("statictext", undefined, "How many steps up (0-10):");
+	var rightInput = rInput.add("edittext", undefined, "2");
+	rightInput.preferredSize.width = 60;
 
-rInput.add("statictext", undefined, "How many steps up (0-10):");// Add labels for input fields
-var rightInput = rInput.add("edittext", undefined, "2"); // Add input fields for CMYK values
-rightInput.preferredSize.width = 60; // Set width of the input box
-
-// Group of buttons that Select everything visible on the artboard, Group 
-var btnSelectAll = sgd.add("button", undefined, "Select All");
-var btnGroup = sgd.add("button", undefined, "Group");
-var btnDeselect = sgd.add("button", undefined, "Deselect All");
+// Select how you want the CMYK text values to appear
+var blackText = sgd.add("radiobutton", undefined, "Black Text");
+var clearText = sgd.add("radiobutton", undefined, "Clear Text");
+blackText.value = true;
 
 // Add Submit or Cancel buttons
 var btnSubmit = g.add("button", undefined, "Create");
 var btnClose = g.add("button", undefined, "Close");
 
-// UI EVENT HANDLERS
-	btnSubmit.onClick = function() {
+// Main window function
+btnSubmit.onClick = function() {
 		
-		var cyanInput = parseInt(cInput.text);
-		var magentaInput = parseInt(mInput.text);
-		var yellowInput = parseInt(yInput.text);
-		var blackInput = parseInt(kInput.text);
-		var stepLeft = parseInt(leftInput.text);
-		var stepRight = parseInt(rightInput.text);
+	var cyanInput = parseInt(cInput.text);
+	var magentaInput = parseInt(mInput.text);
+	var yellowInput = parseInt(yInput.text);
+	var blackInput = parseInt(kInput.text);
+	var stepLeft = parseInt(leftInput.text);
+	var stepRight = parseInt(rightInput.text);
 			
-				// Validate and adjust parsed values
-		var cyan = Math.min(Math.max(cyanInput, 0), 100);
-		var magenta = Math.min(Math.max(magentaInput, 0), 100);
-		var yellow = Math.min(Math.max(yellowInput, 0), 100);
-		var black = Math.min(Math.max(blackInput, 0), 100);
-		var leftStep = Math.min(Math.max(stepLeft, 0), 10);
-		var rightStep = Math.min(Math.max(stepRight, 0), 10);
+	// Validate and adjust parsed values
+	var cyan = Math.min(Math.max(cyanInput, 0), 100);
+	var magenta = Math.min(Math.max(magentaInput, 0), 100);
+	var yellow = Math.min(Math.max(yellowInput, 0), 100);
+	var black = Math.min(Math.max(blackInput, 0), 100);
+	var leftStep = Math.min(Math.max(stepLeft, 0), 10);
+	var rightStep = Math.min(Math.max(stepRight, 0), 10);
 
-		// Store original CMYK values
-		var originalCyan = cyan;
-		var originalMagenta = magenta;
-		var originalYellow = yellow;
-		var originalBlack = black;
+	// Store original CMYK values
+	var originalCyan = cyan;
+	var originalMagenta = magenta;
+	var originalYellow = yellow;
+	var originalBlack = black;
 
-		// Retrieve the selected radio button for color selection
-		var colorSelection;
-		if (cRadioButton.value) {
-			colorSelection = "cyan";
-		} else if (mRadioButton.value) {
-			colorSelection = "magenta";
-		} else if (yRadioButton.value) {
-			colorSelection = "yellow";
-		} else if (kRadioButton.value) {
-			colorSelection = "black";
-		}
+	// Retrieve the selected radio button for color selection
+	var colorSelection;
+	if (cRadioButton.value) {
+		colorSelection = "cyan";
+	} else if (mRadioButton.value) {
+		colorSelection = "magenta";
+	} else if (yRadioButton.value) {
+		colorSelection = "yellow";
+	} else if (kRadioButton.value) {
+		colorSelection = "black";
+	}
 
-		// Prompt for CMYK step value
-		var stepSize = parseInt(stepSizeInput.text);
-		if (isNaN(stepSize) || stepSize < 0 || stepSize > 10) {
-			stepSize = 5; // Default stepSize if invalid input
-			alert("Step value must be between 0 and 10. Defaulting to 5.");
-		}
+	// Prompt for CMYK step value
+	var stepSize = parseInt(stepSizeInput.text);
+	if (isNaN(stepSize) || stepSize < 0 || stepSize > 10) {
+		stepSize = 5; // Default stepSize if invalid input
+		alert("Step value must be between 0 and 10. Defaulting to 5.");
+	}
 
-		// Set CMYK color for the origin square
-		var originColor = new CMYKColor();
-		originColor.cyan = originalCyan;
-		originColor.magenta = originalMagenta;
-		originColor.yellow = originalYellow;
-		originColor.black = originalBlack;
+	// Set CMYK color for the origin square
+	var originColor = new CMYKColor();
+	originColor.cyan = originalCyan;
+	originColor.magenta = originalMagenta;
+	originColor.yellow = originalYellow;
+	originColor.black = originalBlack;
 
-		// Calculate square size
-		var squareSize = 144; // 2 inches = 144 points
+	// Set text color
+	var textColor = new CMYKColor();
+	textColor.black = 100;
 
-		// Create an array to store the squares
-		var squares = [];
+	// Calculate square size
+	var squareSize = 144; // 2 inches = 144 points
 
-		// Create origin square
-		var centerX = (artboardRect[2] - artboardRect[0]) / 2 + artboardRect[0];
-		var centerY = (artboardRect[3] - artboardRect[1]) / 2 + artboardRect[1];
-		var leftOrigin = centerX - squareSize / 2;
-		var topOrigin = centerY + squareSize / 2;
+	// Create an array to store the squares
+	var squares = [];
 
-		// Create origin square location
-		var originSquare = doc.pathItems.rectangle(topOrigin, leftOrigin, squareSize, squareSize);
-		originSquare.fillColor = originColor;
-		originSquare.stroked = false;
+	// Create origin square
+	var centerX = (artboardRect[2] - artboardRect[0]) / 2 + artboardRect[0];
+	var centerY = (artboardRect[3] - artboardRect[1]) / 2 + artboardRect[1];
+	var leftOrigin = centerX - squareSize / 2;
+	var topOrigin = centerY + squareSize / 2;
 
-		// Create text label for origin square
-		var labelText = "CMYK (" + originalCyan + ", " + originalMagenta + ", " + originalYellow + ", " + originalBlack + ")";
-		var textX = centerX;
-		var textY = (centerY - squareSize / 2) + 14; // Position at the bottom, inside edge
-		var textFrame = doc.textFrames.add();
-		textFrame.contents = labelText;
-		textFrame.textRange.characterAttributes.fillColor = originColor;
-		textFrame.position = [textX, textY];
-		textFrame.textRange.paragraphAttributes.justification = Justification.CENTER;
+	// Create origin square location
+	var originSquare = doc.pathItems.rectangle(topOrigin, leftOrigin, squareSize, squareSize);
+	originSquare.fillColor = originColor;
+	originSquare.stroked = false;
 
+	// Text fill color selector
+	var textOColor;
+	if (blackText.value) {
+		textOColor = textColor;
+	} else if (clearText.value) {
+		textOColor = originColor;
+	}
 
+	// Create text label for origin square
+	var labelText = "(" + originalCyan + ", " + originalMagenta + ", " + originalYellow + ", " + originalBlack + ")";
+	var textX = centerX;
+	var textY = (centerY - squareSize / 2) + 14; // Position at the bottom, inside edge
+	var textFrame = doc.textFrames.add();
+	textFrame.contents = labelText;
+	textFrame.textRange.characterAttributes.fillColor = textOColor;
+	textFrame.position = [textX, textY];
+	textFrame.textRange.paragraphAttributes.justification = Justification.CENTER;
 
-		// Create squares to the left
-		for (var i = 1; i <= leftStep; i++) {
+	// Create squares to the left
+	for (var i = 1; i <= leftStep; i++) {
 			var left = leftOrigin - (i * squareSize * 1.25); // 2.5 inches center to center
 
 				// Adjusted CMYK values based on color selection and step size
@@ -199,21 +208,29 @@ var btnClose = g.add("button", undefined, "Close");
 			var squareLeft = doc.pathItems.rectangle(topOrigin, left, squareSize, squareSize);
 			squareLeft.fillColor = colorLeft;
 			squareLeft.stroked = false;
+
+			// Text fill color selector
+			var textLColor;
+			if (blackText.value) {
+				textLColor = textColor;
+			} else if (clearText.value) {
+				textLColor = colorLeft;
+			}
 			
 			// Create text label for left square
-			var labelTextLeft = "CMYK (" + adjustedCyanLeft + ", " + adjustedMagentaLeft + ", " + adjustedYellowLeft + ", " + adjustedBlackLeft + ")";
+			var labelTextLeft = "(" + adjustedCyanLeft + ", " + adjustedMagentaLeft + ", " + adjustedYellowLeft + ", " + adjustedBlackLeft + ")";
 			var textXLeft = left + squareSize / 2;
 			var textFrameLeft = doc.textFrames.add();
 			textFrameLeft.contents = labelTextLeft;
-			textFrameLeft.textRange.characterAttributes.fillColor = colorLeft;
+			textFrameLeft.textRange.characterAttributes.fillColor = textLColor;
 			textFrameLeft.position = [textXLeft, textY];
 			textFrameLeft.textRange.paragraphAttributes.justification = Justification.CENTER;
 
 			squares.push({square: squareLeft, textFrame: textFrameLeft});
-		}
+	}
 
-		// Create squares to the right
-		for (var j = 1; j <= rightStep; j++) {
+	// Create squares to the right
+	for (var j = 1; j <= rightStep; j++) {
 			var left = leftOrigin + (j * squareSize * 1.25); // 2.5 inches center to center
 
 			// Adjusted CMYK values for right squares
@@ -255,18 +272,34 @@ var btnClose = g.add("button", undefined, "Close");
 			squareRight.fillColor = colorRight;
 			squareRight.stroked = false;
 
+			// Text fill color selector
+			var textRColor
+			if (blackText.value) {
+				textRColor = textColor;
+			} else if (clearText.value) {
+				textRColor = colorRight;
+			}
+
 			// Create text label for right square
-			var labelTextRight = "CMYK (" + adjustedCyanRight + ", " + adjustedMagentaRight + ", " + adjustedYellowRight + ", " + adjustedBlackRight + ")";
+			var labelTextRight = "(" + adjustedCyanRight + ", " + adjustedMagentaRight + ", " + adjustedYellowRight + ", " + adjustedBlackRight + ")";
 			var textXRight = left + squareSize / 2;
 			var textFrameRight = doc.textFrames.add();
 			textFrameRight.contents = labelTextRight;
-			textFrameRight.textRange.characterAttributes.fillColor = colorRight;
+			textFrameRight.textRange.characterAttributes.fillColor = textRColor;
 			textFrameRight.position = [textXRight, textY];
 			textFrameRight.textRange.paragraphAttributes.justification = Justification.CENTER;
 
 			squares.push({square: squareRight, textFrame: textFrameRight});
-		}
+	}
 
+	// Text fill color selector
+	if (blackText.value) {
+		
+	} else if (clearText.value) {
+		clearTextFX();
+	}
+
+	function clearTextFX() {
 		// Deselect all items
 		doc.selection = null;
 
@@ -294,60 +327,14 @@ var btnClose = g.add("button", undefined, "Close");
 
 			// Deselect all items
 			doc.selection = null;
-		}
+		};
+	}
 	
-	
-};
-
-btnSelectAll.onClick = function () {
-	selectAllItems(doc);
-};
-
-btnGroup.onClick = function () {
-    groupSelectedItems(doc);
-};
-
-btnDeselect.onClick = function () {
-	deselectAllItems(doc);
 };
 
 btnClose.onClick = function () {
 	w.close();
 };
-
-// Function to select all items on the document
-function selectAllItems(document) {
-    // Deselect all items first
-    document.selection = null;
-    // Loop through all page items
-    for (var i = 0; i < document.pageItems.length; i++) {
-        var currentItem = document.pageItems[i];
-        // Check if the item is visible
-        if (!currentItem.hidden) {
-            currentItem.selected = true;
-        }
-    }
-}
-
-// Function to group selected items
-function groupSelectedItems(document) {
-    // Check if there are any selected items
-    if (document.selection.length > 1) {
-        // Create a group
-        var group = document.groupItems.add();
-        // Add selected items to the group
-        for (var i = 0; i < document.selection.length; i++) {
-            var currentItem = document.selection[i];
-            currentItem.move(group, ElementPlacement.PLACEATEND);
-        }
-    }
-}
-
-// Function to deselect all items on the document
-function deselectAllItems(document) {
-    // Deselect all items
-    document.selection = null;
-}
 
 // SHOW THE WINDOW
 w.show()
