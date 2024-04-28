@@ -14,7 +14,7 @@ var gInput; // CMYK inputs
 var rbInput; // Radio Button input
 var stepInput; // Step % input
 var lrInput; // How many steps left(down) and right(up) 
-var sgd; // Select, Group, Deselect 
+var sgd; // Text color fill group
 var g; // group
 
 var w = new Window("dialog", "CMYK Palette", undefined);
@@ -294,9 +294,33 @@ btnSubmit.onClick = function() {
 
 	// Text fill color selector
 	if (blackText.value) {
-		
+		textGroup();
 	} else if (clearText.value) {
 		clearTextFX();
+	}
+
+	function textGroup() {
+		// Deselect all items
+		doc.selection = null;
+
+		// Select just the far left square and textFrame at the end
+		originSquare.selected = true;
+		textFrame.selected = true;
+
+		// Loop through each square and text frame in the squares array, starting from index 1
+		for (var i = 0; i < squares.length; i++) {
+			// Select the square and text frame
+			squares[i].square.selected = true;
+			squares[i].textFrame.selected = true;
+		};
+
+			// Replace "group" with the name of your recorded action
+			const actionName = "group";
+			// Call the doScript method to run the action
+			app.doScript(actionName, "Default Actions");
+
+			// Deselect all items
+			doc.selection = null;
 	}
 
 	function clearTextFX() {
@@ -307,7 +331,7 @@ btnSubmit.onClick = function() {
 		originSquare.selected = true;
 		textFrame.selected = true;
 
-		// Replace "Your Action Name" with the name of your recorded action
+		// Replace "pathfinder-compoundShape" with the name of your recorded action
 		const actionName = "pathfinder-compoundShape";
 
 		// Call the doScript method to run the action
@@ -328,6 +352,22 @@ btnSubmit.onClick = function() {
 			// Deselect all items
 			doc.selection = null;
 		};
+		// Select just the far left square and textFrame at the end
+		originSquare.selected = true;
+		textFrame.selected = true;
+		
+		// Loop through each square and text frame in the squares array, starting from index 1
+		for (var i = 0; i < squares.length; i++) {
+			// Select the square and text frame
+			squares[i].square.selected = true;
+			squares[i].textFrame.selected = true;
+		};
+		
+			// Call the doScript method to run the action
+			app.doScript("group", "Default Actions");
+		
+			// Deselect all items
+			doc.selection = null;
 	}
 	
 };
