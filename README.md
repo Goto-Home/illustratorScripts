@@ -4,7 +4,7 @@ In order for this code to function properly you will need to:
   - Set: Default Actions
   - Function Key: n/a (does not matter)
   - Color: n/a (does not matter)
-
+-
   - Create a 'Recorded Action' to group selected items - Win: Ctrl + 'G' 
   - Name: group
   - Set: Default Actions
