@@ -1,6 +1,3 @@
-#target illustrator
-#targetengine main
-
 // Get the active document
 var doc = app.activeDocument;
 
