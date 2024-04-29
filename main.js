@@ -129,7 +129,8 @@ btnSubmit.onClick = function() {
 	textColor.black = 100;
 
 	// Calculate square size
-	var squareSize = 144; // 2 inches = 144 points
+	var squareSize = 216; // 2 inches = 144 points
+	var gapSize = 1.04166; // .25 inch gap = 1.125 IF squareSize is 2 inches
 
 	// Create an array to store the squares
 	var squares = [];
@@ -165,7 +166,7 @@ btnSubmit.onClick = function() {
 
 	// Create squares to the left
 	for (var i = 1; i <= leftStep; i++) {
-			var left = leftOrigin - (i * squareSize * 1.25); // 2.5 inches center to center
+			var left = leftOrigin - (i * squareSize * gapSize); // 2.5 inches center to center
 
 				// Adjusted CMYK values based on color selection and step size
 			var adjustedCyanLeft = originalCyan;
@@ -228,7 +229,7 @@ btnSubmit.onClick = function() {
 
 	// Create squares to the right
 	for (var j = 1; j <= rightStep; j++) {
-			var left = leftOrigin + (j * squareSize * 1.25); // 2.5 inches center to center
+			var left = leftOrigin + (j * squareSize * gapSize); // 2.5 inches center to center
 
 			// Adjusted CMYK values for right squares
 			var adjustedCyanRight = originalCyan;
