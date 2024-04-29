@@ -1,23 +1,5 @@
 // mainScript.js
-#target illustrator
-#targetengine main
-
 #include "testFunction.js"
-
-/**
-var ip = new File($.fileName); 
-var scriptPath = ip.path;
-function incScript(sn){ eval('#includepath ' + scriptPath + '\n#include ' + sn); }
-
-incScript('testFunction.js');
-**/
-
-// Create a new document if none exists
-if (!documents.length) {
-    var doc = app.documents.add();
-} else {
-    var doc = app.activeDocument;
-}
 
 // Create a new palette window
 var w = new Window("dialog", "CMYK Palette"); 
