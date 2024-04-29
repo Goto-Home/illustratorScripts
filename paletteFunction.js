@@ -1,5 +1,4 @@
 // paletteFunction.js
-
 function createSquares() {
 		
 	var cyanInput = parseInt(cInput.text);
