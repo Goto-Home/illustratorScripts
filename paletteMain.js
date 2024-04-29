@@ -1,7 +1,4 @@
 // CMYKpaletteMain.js
-#target illustrator
-#targetengine main
-
 #include "paletteFunction.js"
 
 // Get the active document
