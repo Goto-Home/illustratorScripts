@@ -129,8 +129,8 @@ btnSubmit.onClick = function() {
 	textColor.black = 100;
 
 	// Calculate square size
-	var squareSize = 216; // 2 inches = 144 points
-	var gapSize = 1.04166; // .25 inch gap = 1.125 IF squareSize is 2 inches
+	var squareSize = 216; // = 3 inch | 2 inches = 144 points
+	var gapSize = 1.04166; // = .125 inch gap | .25 inch gap = 1.125 IF squareSize is 2 inches
 
 	// Create an array to store the squares
 	var squares = [];
